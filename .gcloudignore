@@ -1,0 +1,19 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+
+# Environment and secrets
+.env
+
+# Deployment/Dev utilities (not needed at runtime)
+scripts/
+Makefile
+README.md
+README_GEMINI_ENTERPRISE.md
