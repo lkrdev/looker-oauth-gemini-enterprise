@@ -6,13 +6,22 @@ import google.auth
 from google.auth.transport.requests import Request
 import requests
 
+from constants import DISCOVERY_ENGINE_BASE_URL
+
 def main():
+    """
+    Registers the Gemini Enterprise OAuth configuration in a Google Cloud project.
+    
+    This script provisions the server-side OAuth2 settings required for Looker integration, 
+    connecting the provided Client ID and Secret with the Discovery Engine. 
+    It authenticates using the environment's default GCP credentials.
+    """
     parser = argparse.ArgumentParser(description="Configure Gemini Enterprise OAuth for Looker")
-    parser.add_argument("--project-id", help="GCP Project ID", default=os.environ.get("PROJECT_ID", "looker-demo-392616"))
-    parser.add_argument("--auth-id", help="Authorization ID", default=os.environ.get("AUTH_ID", "looker-pkce-auth-new"))
-    parser.add_argument("--client-id", help="Looker Client ID", default=os.environ.get("LOOKER_CLIENT_ID", "ge-integration"))
-    parser.add_argument("--client-secret", help="Looker Client Secret", default=os.environ.get("LOOKER_CLIENT_SECRET", "LOOKER_DOES_NOT_USE_SECRET_IN_THIS_FLOW"))
-    parser.add_argument("--instance-url", help="Looker Instance URL", default=os.environ.get("LOOKER_INSTANCE_URL", "https://googledemo2.cloud.looker.com"))
+    parser.add_argument("--project-id", help="GCP Project ID", default=os.environ.get("GOOGLE_CLOUD_PROJECT", "<your-project-id>"))
+    parser.add_argument("--auth-id", help="Authorization ID", default=os.environ.get("AUTH_ID", "<your-auth-id>"))
+    parser.add_argument("--client-id", help="Looker Client ID", default=os.environ.get("LOOKER_OAUTH_CLIENT_ID", "<your-client-id>"))
+    parser.add_argument("--client-secret", help="Looker Client Secret", default=os.environ.get("LOOKER_OAUTH_CLIENT_SECRET", "LOOKER_DOES_NOT_USE_SECRET_IN_THIS_FLOW"))
+    parser.add_argument("--instance-url", help="Looker Instance URL", default=os.environ.get("LOOKERSDK_BASE_URL", "https://<your-instance>.cloud.looker.com"))
     parser.add_argument("--scopes", help="Space-separated OAuth scopes", default=os.environ.get("SCOPES", "cors_api"))
     args = parser.parse_args()
 
@@ -30,7 +39,7 @@ def main():
         print("Please ensure you are authenticated (e.g., 'gcloud auth login' and 'gcloud auth application-default login').")
         return
 
-    url = f"https://discoveryengine.googleapis.com/v1alpha/projects/{args.project_id}/locations/global/authorizations?authorizationId={args.auth_id}"
+    url = f"{DISCOVERY_ENGINE_BASE_URL}/{args.project_id}/locations/global/authorizations?authorizationId={args.auth_id}"
 
     headers = {
         "Authorization": f"Bearer {access_token}",

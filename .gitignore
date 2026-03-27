@@ -1,4 +1,46 @@
-__pycache__
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+*.whl
+
+# Virtual environments
 .env
-*.txt
 .venv
+env/
+venv/
+ENV/
+
+# Logs and databases
+*.log
+
+# Testing / coverage
+.tox/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# Project specific
+fetched_agent_card.json
+*.txt

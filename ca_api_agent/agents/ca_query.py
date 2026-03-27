@@ -24,7 +24,6 @@ from dotenv import load_dotenv
 from google.adk.agents import BaseAgent
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.events import Event
-from ca_api_agent.auth_context import request_bearer_token
 from google.api_core import exceptions as api_exceptions
 from google.cloud import geminidataanalytics_v1beta as geminidataanalytics
 from google.genai import types
@@ -99,7 +98,17 @@ async def stream_nlq(question: str, ctx: InvocationContext) -> AsyncGenerator[st
     logger.info({"request": question})
     _clear_response_shape_state(ctx)
 
-    token = request_bearer_token.get()
+    state = getattr(ctx, 'state', None)
+    session = getattr(ctx, 'session', None)
+    
+    auth_id_key = os.getenv("AUTH_ID", "token")
+    
+    token = None
+    if state and auth_id_key in state:
+        token = state.get(auth_id_key)
+    elif session and hasattr(session, 'state') and auth_id_key in session.state:
+        token = session.state.get(auth_id_key)
+
     if not token:
         logger.error("No Bearer token provided in the request context.")
         yield json.dumps({

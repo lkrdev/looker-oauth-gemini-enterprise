@@ -1,7 +1,7 @@
 [project]
-name = "looker-mcp-agent"
+name = "looker-ge-agent"
 version = "0.1.0"
-description = "Conversational Analytics Agent"
+description = "Looker GE Agent"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -17,13 +17,12 @@ dependencies = [
     "google-genai==1.56.0",
     "typing-extensions==4.15.0",
     "google-cloud-geminidataanalytics==0.10.0",
-    "a2a_sdk",
 ]
 
 
 [project.optional-dependencies]
 dev = [
-    "google-cloud-aiplatform[adk,agent-engines,evaluation]==1.118.0",
+    "google-cloud-aiplatform[adk,agent-engines,evaluation]>=1.132.0",
 ]
 
 
@@ -32,7 +31,7 @@ requires = ["uv_build>=0.7.19,<0.8.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = "ca_api_agent"
+module-name = "looker_ge_agent"
 module-root = ""
 
 [[tool.uv.index]]
