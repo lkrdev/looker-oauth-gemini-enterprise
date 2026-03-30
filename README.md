@@ -8,7 +8,8 @@ The application is built on the **Google Python ADK** and exposes a Looker-integ
 
 ### Core Components:
 - **`looker_ge_agent/`**: Acts as the main entrypoint module. It serves the `root_agent` and by default serves the Looker MCP agent.
-- **`looker_mcp_agent/`**: Contains the core agent logic and ADK setup.
+  - **`looker_mcp_agent/`**: Contains the core agent logic and ADK setup.
+  - **`ca_api_agent/`**: Contains an alternative implementation using CA API.
 - **`deploy.sh` & `deployment/deploy.py`**: Deployment scripts for building the agent and deploying it to Vertex AI Reasoning Engine.
 - **`scripts/`**: Utility scripts for GCP and Gemini Enterprise (AgentSpace) registration.
 - **`archive/`**: Contains older legacy A2A streaming architectural implementations.

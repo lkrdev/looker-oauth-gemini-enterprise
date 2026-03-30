@@ -75,9 +75,6 @@ def set_header_tokens(context: ReadonlyContext, **kwargs) -> dict:
             except Exception as e:
                 ctx_dict[attr] = f"<Error reading value: {e}>"
 
-    print("--- [set_header_tokens] Context ---")
-    print(json.dumps(ctx_dict, indent=2))
-
     # 1. Get the Looker OAuth token from context var
     state = kwargs.get('state') or getattr(context, 'state', None)
     session = kwargs.get('session') or getattr(context, 'session', None)
@@ -85,10 +82,10 @@ def set_header_tokens(context: ReadonlyContext, **kwargs) -> dict:
     
     if state and LOOKER_AUTH_STATE_KEY in state:
         looker_token = state.get(LOOKER_AUTH_STATE_KEY)
-        logger.info(f"[set_header_tokens] Found token in state: {looker_token}")
+        logger.info(f"[set_header_tokens] Found token in state")
     elif session and hasattr(session, 'state') and LOOKER_AUTH_STATE_KEY in session.state:
         looker_token = session.state.get(LOOKER_AUTH_STATE_KEY)
-        logger.info(f"[set_header_tokens] Found token in session.state: {looker_token}")
+        logger.info(f"[set_header_tokens] Found token in session.state")
 
     headers = {}
 
@@ -117,33 +114,6 @@ def _safe_to_dict(obj):
         try: return vars(obj)
         except: return str(obj)
 
-def print_callback_context(callback_context: CallbackContext, **kwargs) -> None:
-    """A before_model_callback that converts CallbackContext to a dict and prints it."""
-    ctx = callback_context
-    ctx_dict = {}
-    for attr in dir(ctx):
-        # Ignore private methods and callables to construct a flat dictionary
-        if not attr.startswith("_") and not callable(getattr(ctx, attr)):
-            try:
-                # Stringify to avoid issues with complex objects printing
-                ctx_dict[attr] = str(getattr(ctx, attr))
-            except Exception as e:
-                ctx_dict[attr] = f"<Error reading value: {e}>"
-
-    print("--- [Before Model Callback] Context ---")
-    print(json.dumps(ctx_dict, indent=2))
-
-    state = kwargs.get('state') or getattr(callback_context, 'state', None)
-    session = kwargs.get('session') or getattr(callback_context, 'session', None)
-    
-    if state and LOOKER_AUTH_STATE_KEY in state:
-        looker_token = state.get(LOOKER_AUTH_STATE_KEY)
-        logger.info(f"[Before Model Callback] Found token in state: {looker_token}")
-    elif session and hasattr(session, 'state') and LOOKER_AUTH_STATE_KEY in session.state:
-        looker_token = session.state.get(LOOKER_AUTH_STATE_KEY)
-        logger.info(f"[Before Model Callback] Found token in session.state: {looker_token}")
-
-    return None
 model = Gemini(model_name=DEFAULT_MCP_SERVER_MODEL)
 # Create the simple ADK agent
 root_agent = Agent(
@@ -160,7 +130,6 @@ root_agent = Agent(
             errlog=None
         )
     ],
-    before_model_callback=print_callback_context,
     planner=BuiltInPlanner(
         thinking_config=types.ThinkingConfig(
             include_thoughts=True,
