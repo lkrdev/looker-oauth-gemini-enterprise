@@ -1,5 +1,7 @@
 import logging
 import json
+import jwt
+import time
 from google.adk import Agent
 from google.adk.models import Gemini
 from google.adk.tools import ToolContext
@@ -24,13 +26,43 @@ load_dotenv()
 
 from .constants import MCP_SERVER_URL, LOOKER_AUTH_STATE_KEY, DEFAULT_MCP_SERVER_MODEL
 
+_token_cache = {}
+
 def get_id_token() -> str:
-    """Retrieves a GCP ID token for authenticating with the MCP server."""
+    """Retrieves a GCP ID token for authenticating with the MCP server, with caching."""
     target_url = MCP_SERVER_URL
     # Deriving the audience from the service URL (strip the path)
     audience = target_url.split('/mcp')[0]
+    
+    global _token_cache
+    
+    # Check if we have a valid cached token
+    now = int(time.time())
+    threshold_mins = int(os.environ.get("TOKEN_REFRESH_THRESHOLD_MINS", "15"))
+    threshold_secs = threshold_mins * 60
+    
+    if target_url in _token_cache:
+        cached_info = _token_cache[target_url]
+        if now + threshold_secs < cached_info.get("token_expiration_time", 0):
+            logger.info("Using cached valid old token")
+            return cached_info["id_token"]
+        else:
+            logger.info("Cached token expired or about to expire. Refreshing...")
+            
+    logger.info("Generating a new GCP ID token...")
     auth_req = google.auth.transport.requests.Request()
     id_token = google.oauth2.id_token.fetch_id_token(auth_req, audience)
+    
+    try:
+        decoded_payload = jwt.decode(id_token, options={"verify_signature": False})
+        _token_cache[target_url] = {
+            "id_token": id_token,
+            "token_expiration_time": decoded_payload.get('exp', 0)
+        }
+        logger.info(f"Cached new token with exp {decoded_payload.get('exp')}")
+    except Exception as e:
+        logger.warning(f"Failed to decode token for caching: {e}")
+        
     return id_token
 
 def set_header_tokens(context: ReadonlyContext, **kwargs) -> dict:
@@ -67,7 +99,6 @@ def set_header_tokens(context: ReadonlyContext, **kwargs) -> dict:
         logger.warning("[header_provider] Looker token missing.")
 
     # 2. Get the GCP identity token for the Cloud Run MCP server
-    logger.info("Generating a new GCP ID token...")
     id_token = get_id_token()
 
     if id_token:
