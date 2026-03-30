@@ -19,7 +19,8 @@ The application is built on the **Google Python ADK** and exposes a Looker-integ
 ### 1. Prerequisites
 - Python 3.12+
 - `uv` for dependency management.
-- Access to a Looker instance and a deployed MCP server (Toolbox).
+- Access to a Looker instance and a deployed [MCP server (MCP Toolbox for Databases)](https://github.com/googleapis/genai-toolbox).
+  - *Note: If your MCP server is deployed to Cloud Run and is private, your Reasoning Engine GCP Service Account needs the **Cloud Run Invoker** (roles/run.invoker) permission to access the MCP server.*
 - `gcloud` CLI installed and authenticated.
 
 ### 2. Environment Setup
