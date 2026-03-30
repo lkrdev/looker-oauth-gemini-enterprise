@@ -116,10 +116,10 @@ def print_callback_context(callback_context: CallbackContext, **kwargs) -> None:
 model = Gemini(model_name=DEFAULT_MCP_SERVER_MODEL)
 # Create the simple ADK agent
 root_agent = Agent(
-    name="context_printer_agent",
+    name="looker_mcp_agent",
     model=model,
-    description="A simple agent that tests tool and callback contexts.",
-    instruction="When the user asks you to print context, use your print_tool_context tool.",
+    description="An agent that has access to Looker APIs via MCP.",
+    instruction="You are a helpful assistant that can answer questions about Looker data. Use the Looker MCP tools to query and analyze data, or perform other Looker actions.",
     tools=[
         MCPToolset(
             connection_params=StreamableHTTPConnectionParams(

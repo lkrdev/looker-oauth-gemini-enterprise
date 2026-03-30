@@ -87,5 +87,5 @@ make setup-oauth
 ### OAuth Flow & Token Access
 
 1. **Authentication**: Gemini Enterprise (GE) initiates an OAuth flow with Looker using the configured `LOOKER_OAUTH_CLIENT_ID`.
-2. **Context Injection**: Once authenticated, GE successfully retrieves a Looker access token and passes it to the deployed Vertex AI Reasoning Engine (ADK Agent). The token is automatically injected into the ADK agent's `InvocationContext` (available in `ctx.state` or `ctx.session.state`).
+2. **Context Injection**: Once authenticated, GE successfully retrieves a Looker access token and passes it to the deployed Vertex AI Reasoning Engine (ADK Agent). The token is automatically injected into the ADK agent's `Context` (available in `state` or `session.state`).
 3. **Token Retrieval**: The token is injected into the state under a key that corresponds to the `AUTH_ID` environment variable configured during agent registration. The ADK agent retrieves this token at runtime by looking up `os.getenv("AUTH_ID")` (e.g., in `ca_query.py` or `agent.py's` header configuration routines).

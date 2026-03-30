@@ -20,7 +20,7 @@ setup-oauth: ## Configure Gemini Enterprise OAuth for Looker
 register-oauth-client: ## Create a Looker OAuth Client API App
 	python3 scripts/create_looker_oauth_client.py
 
-register-adk: setup-oauth ## Register an ADK Reasoning Engine Agent
+register-adk:  ## Register an ADK Reasoning Engine Agent
 	@if [ -z "$$REASONING_ENGINE_ID" ]; then echo "Error: REASONING_ENGINE_ID is required"; exit 1; fi
 	python3 scripts/register_adk_agent.py --action create --agent-id "$${AGENT_ID:-looker_mcp_agent}" --auth-id "$${AUTH_ID:-looker-pkce-auth}" --reasoning-engine-id "$$REASONING_ENGINE_ID"
 
