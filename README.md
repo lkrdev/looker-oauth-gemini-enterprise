@@ -22,6 +22,7 @@ The application is built on the **Google Python ADK** and exposes a Looker-integ
 - Access to a Looker instance and a deployed [MCP server (MCP Toolbox for Databases)](https://github.com/googleapis/genai-toolbox).
   - *Note: If your MCP server is deployed to Cloud Run and is private, your Reasoning Engine GCP Service Account needs the **Cloud Run Invoker** (roles/run.invoker) permission to access the MCP server.*
 - `gcloud` CLI installed and authenticated.
+- A deployed Gemini Enterprise Instance
 
 ### 2. Environment Setup
 Create a `.env` file in the root directory (copy the fields required from the previous configuration):
