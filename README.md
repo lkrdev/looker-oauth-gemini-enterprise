@@ -20,7 +20,17 @@ The application is built on the **Google Python ADK** and exposes a Looker-integ
 - Python 3.12+
 - `uv` for dependency management.
 - Access to a Looker instance and a deployed [MCP server (MCP Toolbox for Databases)](https://github.com/googleapis/genai-toolbox).
-  - *Note: If your MCP server is deployed to Cloud Run and is private, your Reasoning Engine GCP Service Account needs the **Cloud Run Invoker** (roles/run.invoker) permission to access the MCP server.*
+  - *Note: If your MCP server is deployed to Cloud Run and is private, your Reasoning Engine GCP Service Account needs the **Cloud Run Invoker** (roles/run.invoker) permission to access the MCP server. Additional for full OAuth support make sure your Looker source in the MCP Toolbox `tools.yaml` file doesn't use client_id and client_secret and instead add this line: `use_client_oauth: X-Looker-Token`. The ADK agents will inject the Looker access token from GE into this specified header `X-Looker-Token`.*
+    ```yaml
+     looker-source:
+        kind: looker
+        base_url: https://myinstance.cloud.looker.com
+        use_client_oauth: X-Looker-Token
+        verify_ssl: true
+        timeout: 600s
+
+    ....
+    ```
 - `gcloud` CLI installed and authenticated.
 - A deployed Gemini Enterprise Instance
 
