@@ -1,6 +1,6 @@
 # Looker MCP Agent (Reasoning Engine)
 
-This repository contains a specialized AI agent designed to interact with Looker using the **Model Context Protocol (MCP)**. The agent is deployed as a **Vertex AI Reasoning Engine** agent.
+This repository contains a specialized AI agent designed to interact with Looker using the **Model Context Protocol (MCP)** through the OSS MCP Toolbox for Databases (default) OR the Conversational Analytics API. The agent is deployed as a **Vertex AI Reasoning Engine** agent.
 
 ## Architecture Overview
 
