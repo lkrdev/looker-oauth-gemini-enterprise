@@ -3,7 +3,7 @@ import json
 from typing import Any
 from google.protobuf import json_format
 
-from ca_api_agent.constants import DATA_MESSAGE_DISPLAY_MAX_ROWS, DATA_TABLE_DISPLAY_MAX_ROWS
+from ..constants import DATA_MESSAGE_DISPLAY_MAX_ROWS, DATA_TABLE_DISPLAY_MAX_ROWS
 
 def _message_to_dict(message: Any) -> dict[str, Any]:
     proto_message = getattr(message, "_pb", message)

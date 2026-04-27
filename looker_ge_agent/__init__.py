@@ -14,6 +14,10 @@
 
 """Package exports for the Looker GE agent. Serves the Looker MCP Agent as the Root Agent."""
 
-from .looker_mcp_agent.agent import root_agent
+# from .looker_mcp_agent.agent import root_agent
+
+# __all__ = ["root_agent"]
+
+from looker_ge_agent.ca_api_agent.agent import root_agent
 
 __all__ = ["root_agent"]

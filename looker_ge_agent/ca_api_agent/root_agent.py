@@ -27,7 +27,7 @@ from google.genai import types
 from pydantic import PrivateAttr
 from typing_extensions import override
 
-from ca_api_agent.agents import (
+from .agents import (
     DATA_RESULT_STATE_KEY,
     build_conversational_analytics_query_agent,
     build_visualization_agent,

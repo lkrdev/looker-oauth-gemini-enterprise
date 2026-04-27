@@ -14,7 +14,7 @@
 
 """Agent factory modules."""
 
-from ca_api_agent.constants import DATA_RESULT_STATE_KEY, SUMMARY_STATE_KEY
+from ..constants import DATA_RESULT_STATE_KEY, SUMMARY_STATE_KEY
 from .ca_query import (
     ConversationalAnalyticsQueryAgent,
     build_conversational_analytics_query_agent,

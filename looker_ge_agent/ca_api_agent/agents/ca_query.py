@@ -30,8 +30,8 @@ from google.genai import types
 from google.protobuf import json_format
 from typing_extensions import override
 
-from ca_api_agent.constants import DATA_MESSAGE_DISPLAY_MAX_ROWS, DATA_TABLE_DISPLAY_MAX_ROWS, DATA_RESULT_STATE_KEY, SUMMARY_STATE_KEY
-from ca_api_agent.utils.formatters import _message_to_dict, _to_plain_rows, _truncate_data_message_for_display, _build_data_message_trim_notice, _format_code_block_json, _format_simple_markdown_table
+from ..constants import DATA_MESSAGE_DISPLAY_MAX_ROWS, DATA_TABLE_DISPLAY_MAX_ROWS, DATA_RESULT_STATE_KEY, SUMMARY_STATE_KEY, RAW_RESULTS
+from ..utils.formatters import _message_to_dict, _to_plain_rows, _truncate_data_message_for_display, _build_data_message_trim_notice, _format_code_block_json, _format_simple_markdown_table
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -188,6 +188,10 @@ async def stream_nlq(question: str, ctx: InvocationContext) -> AsyncGenerator[st
                             f"{len(normalized_data_rows)}._\n"
                         )
                     await asyncio.sleep(0)
+
+                    if RAW_RESULTS:
+                        logger.info("RAW_RESULTS is True, exiting after data formatting.")
+                        return
 
             # chart rendering is handled by visualization sub-agent
             if system_message.chart:
