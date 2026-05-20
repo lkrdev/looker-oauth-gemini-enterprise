@@ -200,6 +200,12 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
         "MCP_THINKING_BUDGET",
         "LOOKERSDK_CLIENT_ID",
         "LOOKERSDK_CLIENT_SECRET",
+        "LOOKER_CA_AGENT_ID",
+        "AGENT_ID",
+        "LOOKERSDK_VERIFY_SSL",
+        "LOOKML_MODEL",
+        "LOOKML_EXPLORE",
+        "DEPLOY_AGENT_TYPE"
     )
     for var_name in looker_env_var_names:
         var_value = os.getenv(var_name)

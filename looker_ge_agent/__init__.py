@@ -12,12 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Package exports for the Looker GE agent. Serves the Looker MCP Agent as the Root Agent."""
+"""Package exports for the Looker GE agent."""
 
-# from .looker_mcp_agent.agent import root_agent
+import os
+from dotenv import load_dotenv
 
-# __all__ = ["root_agent"]
+# Load environment variables (e.g. from .env file)
+load_dotenv()
 
-from looker_ge_agent.ca_api_agent.agent import root_agent
+# Supported agent types:
+# - "mcp": Looker MCP Agent (looker_mcp_agent)
+# - "ca_api": direct Gemini Data Analytics CA API Agent (ca_api_agent)
+# - "ca_native": Looker Conversational Analytics Native SDK Agent (looker_ca_native_agent)
+agent_type = os.getenv("DEPLOY_AGENT_TYPE", "ca_native").lower()
+
+if agent_type == "mcp":
+    from looker_ge_agent.looker_mcp_agent.agent import root_agent
+elif agent_type == "ca_api":
+    from looker_ge_agent.ca_api_agent.agent import root_agent
+else:
+    from looker_ge_agent.looker_ca_native_agent.agent import root_agent
 
 __all__ = ["root_agent"]

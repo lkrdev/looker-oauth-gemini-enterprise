@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "python-dotenv==1.0.1",
-    "google-adk==1.27.2",
+    "google-adk==1.28.1",
     "immutabledict==4.2.1",
     "google-cloud-aiplatform[adk,agent-engines]>=1.132.0",
     "absl-py==2.2.2",
@@ -14,9 +14,10 @@ dependencies = [
     "google-auth>=2.47.0",
     "google-auth-oauthlib==1.2.2",
     "google-auth-httplib2==0.2.0",
-    "google-genai==1.56.0",
+    "google-genai>=1.64.0,<2.0.0",
     "typing-extensions==4.15.0",
     "google-cloud-geminidataanalytics==0.10.0",
+    "looker-sdk>=26.8.0",
 ]
 
 
