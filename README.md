@@ -1,10 +1,10 @@
-# Looker MCP Agent (Reasoning Engine)
+# Looker Agents in Gemini Enterprise
 
-This repository contains a specialized AI agent designed to interact with Looker using the **Model Context Protocol (MCP)** through the OSS MCP Toolbox for Databases (default) OR the Conversational Analytics API. The agent is deployed as a **Vertex AI Reasoning Engine** agent.
+This repository contains 3 sample agents designed to interact with Looker using either the Conversational Analytics API in GCP, **Model Context Protocol (MCP)** through the OSS MCP Toolbox for Databases (default) OR the Looker Native Conversational Analytics API. The agent is deployed as a **Vertex AI Agent Engine** agent.
 
 ## Architecture Overview
 
-The application is built on the **Google Python ADK** and exposes a Looker-integrated agent that utilizes a remote MCP server for tool execution.
+The application is built on the **Google Python ADK** and exposes a Looker-integrated agent.
 
 ### Core Components:
 - **`looker_ge_agent/`**: Acts as the main entrypoint module. It dynamically exposes the `root_agent` based on the `DEPLOY_AGENT_TYPE` environment variable, allowing developers to switch between the agent configurations without modifying code.
