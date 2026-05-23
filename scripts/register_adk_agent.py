@@ -42,6 +42,7 @@ def main():
     parser.add_argument("--engine-id", help="Agentspace Engine ID", default=os.environ.get("GE_ENGINE_ID", "<your-engine-id>"))
     parser.add_argument("--agent-id", help="The name of the agent to register", default=os.environ.get("AGENT_ID", "<your-agent-id>"))
     parser.add_argument("--display-name", help="Display name for GE registration", default=os.environ.get("AGENT_DISPLAY_NAME", os.environ.get("AGENT_ID", "Looker Agent")))
+    parser.add_argument("--icon-uri", help="Agent icon GCS or HTTPS URI", default=os.environ.get("AGENT_ICON_URI"))
     parser.add_argument("--reasoning-engine-id", help="The reasoning engine ID (e.g. projects/.../locations/.../reasoningEngines/...)", required=True)
     parser.add_argument("--project-id", help="Optional GCP project ID to override default auth", default=os.environ.get("GOOGLE_CLOUD_PROJECT"))
     args = parser.parse_args()
@@ -77,9 +78,6 @@ def main():
     payload = {
         "displayName": args.display_name,
         "description": "An ADK Reasoning Engine Agent",
-        "icon": {
-            "uri": os.environ.get("AGENT_ICON_URI", "https://raw.githubusercontent.com/brettguenther/looker-custom-embed-navigation-extension/refs/heads/main/looker-color-img.svg")
-        },
         "authorizationConfig": {
             "agentAuthorization": f"projects/{project_number}/locations/global/authorizations/{args.auth_id}",
             "toolAuthorizations": [
@@ -92,6 +90,9 @@ def main():
             }
         }
     }
+
+    if args.icon_uri:
+        payload["icon"] = {"uri": args.icon_uri}
     
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -111,7 +112,11 @@ def main():
         # PATCH to agents/{agent_id} endpoint
         # The name must be in the payload for patching
         payload["name"] = f"projects/{project_number}/locations/global/collections/default_collection/engines/{args.engine_id}/assistants/default_assistant/agents/{args.agent_id}"
-        url = f"{base_url}/{args.agent_id}?updateMask=adkAgentDefinition,authorizationConfig,displayName,icon"
+        mask_fields = ["adkAgentDefinition", "authorizationConfig", "displayName"]
+        if args.icon_uri:
+            mask_fields.append("icon")
+        update_mask = ",".join(mask_fields)
+        url = f"{base_url}/{args.agent_id}?updateMask={update_mask}"
         response = requests.patch(url, headers=headers, json=payload)
     
     if response.status_code >= 400:

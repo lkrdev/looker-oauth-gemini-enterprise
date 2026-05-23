@@ -99,9 +99,15 @@ MCP_THINKING_BUDGET=1024
 
 # Gemini Enterprise / Agentspace Registration Settings
 AGENT_ID=<AGENT_ID>
+AGENT_DISPLAY_NAME=Looker Agent # User-friendly name in Gemini Enterprise UI
+# AGENT_ICON_URI=https://path-to-logo.svg/png # Optional public SVG/PNG or GCS URI for custom icon
 AUTH_ID=<AUTH_ID>
 GE_ENGINE_ID=<GE_ENGINE_ID>
 REASONING_ENGINE_ID=<REASONING_ENGINE_ID>
+
+# Telemetry / Observability Settings (defaults to true)
+GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true
+OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true
 ```
 
 ### 3. First-Time Setup Order
@@ -133,6 +139,19 @@ To update an already registered agent with a new reasoning engine (patching):
 ```bash
 make patch-adk
 ```
+
+## Observability, Telemetry & Custom Metadata
+
+### Telemetry & Tracing
+OpenTelemetry instrumentation is enabled by default inside the deployed Reasoning Engine, populating standard "Traces" and "Logs" in the Vertex AI GCP console. You can toggle these variables inside your `.env`:
+* **`GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY`** (defaults to `true`): Set to `false` to disable active OpenTelemetry status metrics.
+* **`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT`** (defaults to `true`): Set to `false` to prevent raw prompt text and message body parameters from being stored inside logs (sensitive contents filter).
+
+### Custom Display Name & Icon in Gemini Enterprise
+You can override default/technical identifiers in the chat UI by configuring presentation metadata:
+* **`AGENT_DISPLAY_NAME`**: Set to a user-friendly name (e.g., `Looker Analyst`) to display in place of the generic `AGENT_ID` in the chat window.
+* **`AGENT_ICON_URI`**: (Optional) Set to a public SVG/PNG link or a GCS path to customize the agent's profile icon. If omitted, no icon parameter is sent, and Gemini Enterprise's default avatar is applied.
+* Both properties are dynamically managed and updated on GAE whenever you execute a `make patch-adk` or `make register-adk` action.
 
 ## OAuth Setup
 
