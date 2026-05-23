@@ -114,7 +114,10 @@ class RootAgent(BaseAgent):
 
     @staticmethod
     def _strip_code_blocks(text: str) -> str:
-        return re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+        text = re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+        # Fix squashed "Saved as artifact" text chunks
+        text = re.sub(r"(\w+)\.Saved as artifact:", r"\1.\n\nSaved as artifact:", text)
+        return text
 
     @staticmethod
     def _sanitize_visualization_content(
@@ -129,10 +132,7 @@ class RootAgent(BaseAgent):
             if inline_data and inline_data.data:
                 mime_type = getattr(inline_data, "mime_type", None) or "image/png"
                 if mime_type.startswith("image/"):
-                    b64_data = base64.b64encode(inline_data.data).decode("ascii")
-                    sanitized_parts.append(
-                        types.Part(text=f"![chart](data:{mime_type};base64,{b64_data})")
-                    )
+                    sanitized_parts.append(part)
                     continue
 
             text = getattr(part, "text", None)
@@ -168,7 +168,7 @@ class RootAgent(BaseAgent):
             logger.info("Triggering optional sub-agent: %s", spec.key)
             status_content = types.Content(
                 role="model",
-                parts=[types.Part(text=f"Running optional step: {spec.description}")],
+                parts=[types.Part(text=f"Running optional step: {spec.description}\n")],
             )
             yield Event(
                 author=self.name,
@@ -178,11 +178,27 @@ class RootAgent(BaseAgent):
                 content=status_content,
             )
 
+            detected_pngs = []
+            accumulated_text = ""
             try:
                 logger.info("Starting spec.agent.run_async for '%s'", spec.key)
                 async for event in spec.agent.run_async(ctx):
                     forward_event = event
                     if spec.key == "visualization":
+                        if event.content and event.content.parts:
+                            for part in event.content.parts:
+                                text = getattr(part, "text", None)
+                                if isinstance(text, str):
+                                    accumulated_text += text
+                            
+                            # Search full accumulated text for the pattern
+                            match = re.search(r"Saved as artifact:\s*([a-zA-Z0-9_-]+\.png)", accumulated_text)
+                            if match:
+                                png_name = match.group(1)
+                                if png_name not in detected_pngs:
+                                    detected_pngs.append(png_name)
+                                    logger.info("Regex-detected new PNG artifact in accumulated text: %s", png_name)
+
                         sanitized_content = self._sanitize_visualization_content(
                             event.content
                         )
@@ -197,6 +213,27 @@ class RootAgent(BaseAgent):
                             event.content = sanitized_content
                             forward_event = event
                     yield self._as_non_terminal(forward_event)
+
+                # Post-process: load and yield any regex-detected PNG artifacts!
+                if spec.key == "visualization":
+                    for png_name in detected_pngs:
+                        try:
+                            logger.info("Loading regex-detected PNG artifact: %s...", png_name)
+                            artifact_part = await ctx.load_artifact(png_name)
+                            if artifact_part and artifact_part.inline_data:
+                                # Ensure correct image/png MIME type
+                                artifact_part.inline_data.mime_type = "image/png"
+                                image_event = Event(
+                                    author=self.name,
+                                    partial=False,
+                                    turn_complete=False,
+                                    invocation_id=ctx.invocation_id,
+                                    content=types.Content(role="model", parts=[artifact_part])
+                                )
+                                yield self._as_non_terminal(image_event)
+                        except Exception as e:
+                            logger.error("Failed loading regex-detected artifact %s: %s", png_name, e)
+
             except Exception as err:  # pragma: no cover - defensive runtime guard
                 logger.exception("Optional sub-agent '%s' failed.", spec.key)
                 error_content = types.Content(

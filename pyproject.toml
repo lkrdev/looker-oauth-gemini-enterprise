@@ -18,6 +18,8 @@ dependencies = [
     "typing-extensions==4.15.0",
     "google-cloud-geminidataanalytics==0.10.0",
     "looker-sdk>=26.8.0",
+    "pandas>=2.2.0",
+    "matplotlib>=3.8.0",
 ]
 
 

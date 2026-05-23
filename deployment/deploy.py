@@ -146,6 +146,8 @@ def create(env_vars: EnvVars) -> None:
         requirements=[AGENT_WHL_FILE],
         extra_packages=[AGENT_WHL_FILE],
         env_vars=env_vars,
+        display_name=os.getenv("AGENT_ID", "looker-ge-agent"),
+        description="A Looker Gemini Enterprise ADK Agent",
     )
     logger.info("Created remote agent: %s", remote_agent.resource_name)
     print(f"\nSuccessfully created agent: {remote_agent.resource_name}")
@@ -205,12 +207,20 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
         "LOOKERSDK_VERIFY_SSL",
         "LOOKML_MODEL",
         "LOOKML_EXPLORE",
-        "DEPLOY_AGENT_TYPE"
+        "DEPLOY_AGENT_TYPE",
+        "GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY",
+        "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"
     )
     for var_name in looker_env_var_names:
         var_value = os.getenv(var_name)
         if var_value is not None:
             env_vars[var_name] = var_value
+
+    # Default to true/yes for telemetry configurations
+    if env_vars.get("GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY") is None:
+        env_vars["GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY"] = "true"
+    if env_vars.get("OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT") is None:
+        env_vars["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "true"
 
     logger.info("Using PROJECT: %s", project_id)
     logger.info("Using LOCATION: %s", location)

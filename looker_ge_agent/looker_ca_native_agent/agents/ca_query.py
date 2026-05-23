@@ -149,7 +149,7 @@ async def stream_nlq(question: str, ctx: InvocationContext) -> AsyncGenerator[st
                     )
                     ctx.session.state[DATA_RESULT_STATE_KEY] = normalized_data_rows
 
-                    yield f"The query returned {len(normalized_data_rows)} row(s)\n"
+                    yield f"The query returned {len(normalized_data_rows)} row(s)\n\n"
                     yield _format_simple_markdown_table(
                         normalized_data_rows[:DATA_TABLE_DISPLAY_MAX_ROWS]
                     )
@@ -256,7 +256,7 @@ class ConversationalAnalyticsQueryAgent(BaseAgent):
 
         status_message = types.Content(
             role="model",
-            parts=[types.Part(text="Invoking the Conversational Analytics API...")],
+            parts=[types.Part(text="Invoking the Conversational Analytics API...\n")],
         )
         yield Event(
             author=self.name,
